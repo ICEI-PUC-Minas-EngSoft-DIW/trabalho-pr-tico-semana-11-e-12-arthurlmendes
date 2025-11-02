@@ -11,19 +11,42 @@ Para esse projeto, além de mudarmos o JSON para o JSON Server, vamos permitir o
 - Proposta de projeto escolhida: Lugares e Experiências - Guia de Trilhas e Acampamentos.
 - Breve descrição sobre seu projeto: O projeto é um Guia de Trilhas e Acampamentos que simula uma aplicação cliente-servidor (Front-End e Back-End). O objetivo foi implementar o ciclo completo de CRUD (Create, Read, Update, Delete) consumindo uma API RESTful simulada pelo JSON Server.
 
+
+<< IMAGENS GERAIS DO SITE AQUI >>
+
+![Descrição da Imagem](prints/img1.jpg)
+![Descrição da Imagem](prints/img2.jpg)
+![Descrição da Imagem](prints/img3.jpg)
+![Descrição da Imagem](prints/img4.jpg)
+![Descrição da Imagem](prints/img5.jpg)
+
+
+
 **Print dos testes da API com Postman ou similar**
 
 << COLOQUE A IMAGEM GET AQUI >>
+![Descrição da Imagem](prints/img6.png)
+![Descrição da Imagem](prints/img7.png)
+
 
 << COLOQUE A IMAGEM POST AQUI >>
 
+![Imagem Post](prints/img12.png)
+
 << COLOQUE A IMAGEM PUT AQUI >>
 
+![Imagem Put](prints/img10.jpeg)
+
 << COLOQUE A IMAGEM DELETE AQUI >>
+![Imagem Delete: ](prints/img9.jpeg)
+![Imagem Delete: ](prints/img11.jpeg)
+
 
 **Print da aba NETWORK com requisições Fetch/XHR POST e GET**
 
 <<  COLOQUE A IMAGEM AQUI >>
+![Imagem: ](prints/img7.png)
+![Imagem: ](prints/img8.png)
 
 ## **Orientações Gerais**
 
