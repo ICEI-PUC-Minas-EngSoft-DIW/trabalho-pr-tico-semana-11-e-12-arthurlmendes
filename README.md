@@ -6,10 +6,10 @@ Para esse projeto, além de mudarmos o JSON para o JSON Server, vamos permitir o
 
 ## Informações do trabalho
 
-- Nome:
-- Matricula:
-- Proposta de projeto escolhida:
-- Breve descrição sobre seu projeto:
+- Nome: Arthur Lima Mendes
+- Matricula: 901170
+- Proposta de projeto escolhida: Lugares e Experiências - Guia de Trilhas e Acampamentos.
+- Breve descrição sobre seu projeto: O projeto é um Guia de Trilhas e Acampamentos que simula uma aplicação cliente-servidor (Front-End e Back-End). O objetivo foi implementar o ciclo completo de CRUD (Create, Read, Update, Delete) consumindo uma API RESTful simulada pelo JSON Server.
 
 **Print dos testes da API com Postman ou similar**
 

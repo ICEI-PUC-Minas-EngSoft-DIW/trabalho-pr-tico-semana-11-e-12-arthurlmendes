@@ -1,17 +1,14 @@
-// ===========================================
-// assets/js/app.js - CÓDIGO FINAL CORRIGIDO
-// ===========================================
 
-// URL BASE da API do JSON Server (Sincronizado com a porta 3002)
+// URL BASE da API do JSON Server (Sincronizado com a porta 3003)
 
 const API_URL = 'http://localhost:3003/aventuras';
 
-// ----------------------------------------------------
-// 1. FUNÇÕES DE CONSUMO DA API (CRUD)
-// ----------------------------------------------------
+
+// 1. funções de consumo da api (CRUD)
+
 
 /**
- * READ ALL: Busca todos os itens da API e monta a Home Page.
+ * busca todos os itens da API e monta a Home Page.
  */
 async function carregarItensHome() {
     try {
@@ -38,7 +35,7 @@ async function carregarItensHome() {
 }
 
 /**
- * CREATE: Lida com o envio do formulário de cadastro (Método POST).
+ * lida com o envio do formulário de cadastro (Método POST).
  */
 async function cadastrarAventura(event) {
     event.preventDefault(); 
@@ -76,7 +73,7 @@ async function cadastrarAventura(event) {
 }
 
 /**
- * DELETE: Remove um registro específico.
+ * remove um registro específico.
  */
 async function deletarAventura(id) {
     if (confirm(`Tem certeza que deseja excluir a aventura de ID ${id}?`)) {
@@ -100,9 +97,9 @@ async function deletarAventura(id) {
 }
 
 
-// ----------------------------------------------------
-// 2. FUNÇÃO PARA DETALHES.HTML (READ ONE)
-// ----------------------------------------------------
+
+// 2. funções para DETALHES.HTML 
+
 
 async function carregarDetalhes() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -127,7 +124,7 @@ async function carregarDetalhes() {
         document.title = `${item.nome} - Detalhes da Aventura`;
         tituloItem.textContent = item.nome;
 
-        // INJEÇÃO DA SEÇÃO 1: DETALHES GERAIS (Layout Personalizado)
+        //  DETALHES GERAIS
         detalhesGerais.innerHTML = `
             <div class="row">
                 <div class="col-md-5 mb-4 mb-md-0">
@@ -156,7 +153,7 @@ async function carregarDetalhes() {
             </div>
         `;
 
-        // INJEÇÃO DA SEÇÃO 2: FOTOS VINCULADAS
+        // FOTOS VINCULADAS
         let fotosContent = '';
         if (item.atracoes && item.atracoes.length > 0) {
             item.atracoes.forEach(atracao => {
@@ -182,9 +179,9 @@ async function carregarDetalhes() {
 }
 
 
-// ----------------------------------------------------
-// 3. FUNÇÕES DE MONTAGEM DE COMPONENTES
-// ----------------------------------------------------
+
+// 3. funções de montagem de componentes
+
 
 function montarCarrossel(destaques) {
     const inner = document.getElementById('carrossel-inner');
@@ -237,9 +234,8 @@ function montarCards(dados) {
 }
 
 
-// ----------------------------------------------------
 // 4. LÓGICA DE INICIALIZAÇÃO E EVENT LISTENERS
-// ----------------------------------------------------
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // Inicialização da Home (Carrossel e Cards)

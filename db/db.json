@@ -1,18 +1,44 @@
 {
-  "usuarios": [
+  "aventuras": [
     {
-      "id": "187cb7e5-e097-4224-8bc7-b610c855e2b1",
-      "login": "admin",
-      "senha": "123",
-      "nome": "Administrador do Sistema",
-      "email": "admin@abc.com"
+      "id": "3",
+      "nome": "Camping Vale do Pati",
+      "localizacao": "Chapada Diamantina, BA",
+      "dificuldade": "Extrema (Trekking)",
+      "descricao_breve": "Experiência imersiva no coração da Chapada Diamantina.",
+      "conteudo_completo": "O Vale do Pati exige um trekking de múltiplos dias. A área é remota e a hospedagem é feita em casas de nativos (campings rústicos). Exige planejamento logístico rigoroso e guia local.",
+      "imagem_principal": "imagens/pati.jpeg",
+      "imagem_card": "imagens/pati2.jpeg",
+      "atracoes": [
+        {
+          "titulo": "Cachoeira do Funil",
+          "imagem": "imagens/pati3.jpg"
+        },
+        {
+          "titulo": "Vista do Morro",
+          "imagem": "imagens/pati4.jpg"
+        }
+      ]
     },
     {
-      "id": "ec37c83d-4b7f-458d-9e10-3fda7d37cd3e",
-      "login": "user",
-      "senha": "123",
-      "nome": "Usuario Comum",
-      "email": "user@abc.com"
+      "id": "4",
+      "nome": "Camping da Pousada da Praia",
+      "localizacao": "Paraty, RJ",
+      "dificuldade": "Fácil",
+      "descricao_breve": "Camping com infraestrutura completa perto do mar.",
+      "conteudo_completo": "Perfeito para quem busca conforto e proximidade com o mar. O camping oferece banheiros limpos, energia elétrica, área de convivência e segurança.",
+      "imagem_principal": "imagens/praia.jpeg",
+      "imagem_card": "imagens/praia2.jpeg",
+      "atracoes": [
+        {
+          "titulo": "Vista da Praia",
+          "imagem": "imagens/praia3.jpg"
+        },
+        {
+          "titulo": "Área de Churrasco",
+          "imagem": "imagens/praia4.jpg"
+        }
+      ]
     }
   ]
 }
