@@ -1,36 +1,191 @@
 // ===========================================
-// assets/js/app.js - LÓGICA FETCH (CRUD)
+// assets/js/app.js - CÓDIGO FINAL CORRIGIDO
 // ===========================================
 
-// URL BASE da API do JSON Server
-const API_URL = 'http://localhost:3000/aventuras';
+// URL BASE da API do JSON Server (Sincronizado com a porta 3002)
+
+const API_URL = 'http://localhost:3003/aventuras';
 
 // ----------------------------------------------------
-// FUNÇÕES DE CONSUMO DA API (CRUD)
+// 1. FUNÇÕES DE CONSUMO DA API (CRUD)
 // ----------------------------------------------------
 
 /**
- * READ: Monta a Seção 1 (Carrossel) e Seção 2 (Cards) da Home.
+ * READ ALL: Busca todos os itens da API e monta a Home Page.
  */
 async function carregarItensHome() {
     try {
-        const response = await fetch(API_URL); // GET ALL
+        const response = await fetch(API_URL);
+        
+        if (!response.ok) {
+             throw new Error(`Erro HTTP! Status: ${response.status}`);
+        }
+        
         const dados = await response.json();
         
-        // Separa destaques (operação READ)
         const destaques = dados.filter(item => item.destaque === true); 
 
         montarCarrossel(destaques);
         montarCards(dados);
+
     } catch (error) {
-        console.error("Erro ao carregar dados da API:", error);
-        // Exibir uma mensagem de erro no DOM se necessário
+        console.error("Erro ao carregar dados da API. Verifique se o JSON Server está rodando na porta 3002.", error);
+        const container = document.getElementById('trilhas-container');
+        if (container) {
+            container.innerHTML = `<p class="text-center text-danger">Não foi possível carregar as aventuras. Verifique se o servidor está online.</p>`;
+        }
     }
 }
 
 /**
- * READ: Monta o Carrossel (Componente)
+ * CREATE: Lida com o envio do formulário de cadastro (Método POST).
  */
+async function cadastrarAventura(event) {
+    event.preventDefault(); 
+
+    const form = event.target;
+    const novaAventura = {
+        nome: form.querySelector('#nome').value,
+        localizacao: form.querySelector('#localizacao').value,
+        dificuldade: form.querySelector('#dificuldade').value,
+        descricao_breve: form.querySelector('#descricao_breve').value,
+        conteudo_completo: 'Conteúdo detalhado padrão.',
+        imagem_principal: form.querySelector('#imagem_card').value,
+        imagem_card: form.querySelector('#imagem_card').value,
+        atracoes: [],
+        destaque: false
+    };
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(novaAventura)
+        });
+
+        if (response.ok) {
+            alert("Aventura cadastrada com sucesso! Recarregue a Home Page.");
+            form.reset();
+        } else {
+            alert("Erro ao cadastrar aventura.");
+        }
+    } catch (error) {
+        console.error("Erro na requisição POST:", error);
+        alert("Erro de conexão com o servidor. Verifique o console.");
+    }
+}
+
+/**
+ * DELETE: Remove um registro específico.
+ */
+async function deletarAventura(id) {
+    if (confirm(`Tem certeza que deseja excluir a aventura de ID ${id}?`)) {
+        try {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                alert(`Aventura ${id} excluída com sucesso!`);
+                if (document.getElementById('trilhas-container')) {
+                    carregarItensHome(); 
+                }
+            } else {
+                alert("Erro ao excluir aventura.");
+            }
+        } catch (error) {
+            console.error("Erro na requisição DELETE:", error);
+        }
+    }
+}
+
+
+// ----------------------------------------------------
+// 2. FUNÇÃO PARA DETALHES.HTML (READ ONE)
+// ----------------------------------------------------
+
+async function carregarDetalhes() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const itemId = urlParams.get('id');
+
+    if (!itemId) { window.location.href = 'index.html'; return; }
+
+    try {
+        const response = await fetch(`${API_URL}/${itemId}`);
+        const item = await response.json();
+        
+        const tituloItem = document.getElementById('titulo-item');
+        const detalhesGerais = document.getElementById('detalhes-gerais');
+        const fotosContainer = document.getElementById('fotos-vinculadas');
+
+        if (!response.ok || !item.id) {
+            tituloItem.textContent = 'Aventura não encontrada!';
+            detalhesGerais.innerHTML = `<p class="text-center text-danger lead mt-5">O ID da aventura que você tentou acessar não existe.</p>`;
+            return;
+        }
+
+        document.title = `${item.nome} - Detalhes da Aventura`;
+        tituloItem.textContent = item.nome;
+
+        // INJEÇÃO DA SEÇÃO 1: DETALHES GERAIS (Layout Personalizado)
+        detalhesGerais.innerHTML = `
+            <div class="row">
+                <div class="col-md-5 mb-4 mb-md-0">
+                    <img src="${item.imagem_principal}" class="img-fluid rounded shadow" alt="Principal de ${item.nome}">
+                </div>
+                
+                <div class="col-md-7">
+                    <h3 class="text-primary mb-3">${item.nome}</h3>
+                    <p class="lead text-muted">${item.descricao_breve}</p>
+                    <hr>
+                    
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <p class="mb-1"><strong>Localização:</strong> ${item.localizacao}</p>
+                            <p class="mb-1"><strong>Dificuldade:</strong> <span class="badge bg-danger fs-6">${item.dificuldade}</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            <p class="mb-1"><strong>Distância:</strong> ${item.distancia}</p>
+                            <p class="mb-1"><strong>Tempo Estimado:</strong> ${item.tempo_estimado}</p>
+                        </div>
+                    </div>
+                    
+                    <h4 class="mt-4 text-success">Descrição Detalhada:</h4>
+                    <p>${item.conteudo_completo}</p>
+                </div>
+            </div>
+        `;
+
+        // INJEÇÃO DA SEÇÃO 2: FOTOS VINCULADAS
+        let fotosContent = '';
+        if (item.atracoes && item.atracoes.length > 0) {
+            item.atracoes.forEach(atracao => {
+                fotosContent += `
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="card h-100 shadow-sm border-0">
+                            <img src="${atracao.imagem}" class="card-img-top img-fluid fotos-vinculadas-img" alt="${atracao.titulo}">
+                            <div class="card-body p-2 bg-light">
+                                <p class="card-text fw-bold text-center m-0 text-secondary">${atracao.titulo}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+             fotosContent = `<div class="col-12"><p class="text-muted text-center">Nenhuma foto vinculada disponível.</p></div>`;
+        }
+        document.getElementById('fotos-vinculadas').innerHTML = fotosContent;
+
+    } catch (error) {
+        console.error("Erro ao carregar detalhes:", error);
+    }
+}
+
+
+// ----------------------------------------------------
+// 3. FUNÇÕES DE MONTAGEM DE COMPONENTES
+// ----------------------------------------------------
+
 function montarCarrossel(destaques) {
     const inner = document.getElementById('carrossel-inner');
     if (!inner) return;
@@ -38,7 +193,7 @@ function montarCarrossel(destaques) {
     let htmlContent = '';
     destaques.forEach((item, index) => {
         const active = index === 0 ? 'active' : '';
-        // Note o uso de `item.id` para o link de detalhes
+        
         htmlContent += `
             <div class="carousel-item ${active}">
                 <img src="${item.imagem_principal}" class="d-block w-100 carousel-img" alt="${item.nome}">
@@ -53,16 +208,12 @@ function montarCarrossel(destaques) {
     inner.innerHTML = htmlContent;
 }
 
-/**
- * READ: Monta a Grade de Cards (Componente)
- */
 function montarCards(dados) {
     const container = document.getElementById('trilhas-container');
     if (!container) return; 
 
     let htmlContent = '';
     dados.forEach(item => {
-        // Monta o card (operação READ)
         htmlContent += `
             <article class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
                 <div class="card h-100 shadow-sm border-0">
@@ -73,7 +224,7 @@ function montarCards(dados) {
                         <a href="detalhes.html?id=${item.id}" class="btn btn-primary mt-auto">Ver Detalhes</a>
                         
                         <div class="d-flex justify-content-center mt-2">
-                           <button class="btn btn-sm btn-info me-2" onclick="alert('Funcionalidade de Edição (PUT) implementada no servidor, mas precisa de formulário dedicado.')">Editar</button>
+                           <button class="btn btn-sm btn-info me-2" onclick="alert('PUT (Edição) precisa de um formulário e função dedicados.')">Editar</button>
                            <button class="btn btn-sm btn-danger" onclick="deletarAventura(${item.id})">Excluir</button>
                         </div>
                         
@@ -86,107 +237,8 @@ function montarCards(dados) {
 }
 
 
-/**
- * CREATE: Lida com o envio do formulário de cadastro.
- */
-async function cadastrarAventura(event) {
-    event.preventDefault(); // Impede o recarregamento da página
-
-    const form = event.target;
-    const novaAventura = {
-        nome: form.querySelector('#nome').value,
-        localizacao: form.querySelector('#localizacao').value,
-        dificuldade: form.querySelector('#dificuldade').value,
-        descricao_breve: form.querySelector('#descricao_breve').value,
-        conteudo_completo: 'Conteúdo detalhado padrão.', // Adiciona conteúdo completo padrão
-        imagem_principal: form.querySelector('#imagem_card').value, // Usando a URL do card como principal
-        imagem_card: form.querySelector('#imagem_card').value,
-        atracoes: [], // Inicia com array de atrações vazio
-        destaque: false
-    };
-
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST', // Método POST para criação
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(novaAventura)
-        });
-
-        if (response.ok) {
-            alert("Aventura cadastrada com sucesso!");
-            form.reset(); // Limpa o formulário
-        } else {
-            alert("Erro ao cadastrar aventura.");
-        }
-    } catch (error) {
-        console.error("Erro na requisição POST:", error);
-    }
-}
-
-
-/**
- * DELETE: Remove um registro específico.
- */
-async function deletarAventura(id) {
-    if (confirm(`Tem certeza que deseja excluir a aventura de ID ${id}?`)) {
-        try {
-            const response = await fetch(`${API_URL}/${id}`, {
-                method: 'DELETE' // Método DELETE para exclusão
-            });
-
-            if (response.ok) {
-                alert(`Aventura ${id} excluída com sucesso!`);
-                // Se estiver na home, recarrega a lista
-                if (document.getElementById('trilhas-container')) {
-                    carregarItensHome(); 
-                }
-            } else {
-                alert("Erro ao excluir aventura.");
-            }
-        } catch (error) {
-            console.error("Erro na requisição DELETE:", error);
-        }
-    }
-}
-
 // ----------------------------------------------------
-// FUNÇÃO PARA DETALHES.HTML (READ ONE)
-// ----------------------------------------------------
-
-async function carregarDetalhes() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const itemId = urlParams.get('id');
-
-    if (!itemId) {
-        // Redireciona se não houver ID (Tratamento de erro)
-        window.location.href = 'index.html'; 
-        return;
-    }
-
-    try {
-        const response = await fetch(`${API_URL}/${itemId}`); // GET ONE
-        const item = await response.json();
-
-        if (!response.ok) {
-            // Se o ID for 404
-            document.getElementById('titulo-item').textContent = 'Aventura não encontrada!';
-            return;
-        }
-
-        // ... (Implementação da injeção de HTML na página de detalhes) ...
-        document.title = `${item.nome} - Detalhes da Aventura`;
-        document.getElementById('titulo-item').textContent = item.nome;
-        
-        // Lógica de injeção de detalhes (COPIAR CÓDIGO DA ETAPA ANTERIOR AQUI)
-
-    } catch (error) {
-        console.error("Erro ao carregar detalhes:", error);
-    }
-}
-
-
-// ----------------------------------------------------
-// LÓGICA DE INICIALIZAÇÃO E EVENT LISTENERS
+// 4. LÓGICA DE INICIALIZAÇÃO E EVENT LISTENERS
 // ----------------------------------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
